@@ -41,7 +41,7 @@
 #' @export
 
 
-scDHA <- function(data = data, ndim = 10, k = NULL, method = "scDHA", sparse = FALSE, n = 5e3, ncores = 10L, gen_fil = TRUE, do.clus = TRUE, sample.prob = NULL, seed = NULL) {
+scDHA <- function(data = data, ndim = 10, k = NULL, K = 1, method = "scDHA", sparse = FALSE, n = 5e3, ncores = 10L, gen_fil = TRUE, do.clus = TRUE, sample.prob = NULL, seed = NULL) {
   RhpcBLASctl::blas_set_num_threads(min(2, ncores))
   RhpcBLASctl::omp_set_num_threads(min(2, ncores))
   K = 3
