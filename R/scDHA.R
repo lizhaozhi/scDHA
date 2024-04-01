@@ -41,7 +41,7 @@
 #' @export
 
 
-scDHA <- function(data = data, k = NULL, method = "scDHA", sparse = FALSE, n = 5e3, ncores = 10L, gen_fil = TRUE, do.clus = TRUE, sample.prob = NULL, seed = NULL) {
+scDHA <- function(data = data, ndim = 10, k = NULL, method = "scDHA", sparse = FALSE, n = 5e3, ncores = 10L, gen_fil = TRUE, do.clus = TRUE, sample.prob = NULL, seed = NULL) {
   RhpcBLASctl::blas_set_num_threads(min(2, ncores))
   RhpcBLASctl::omp_set_num_threads(min(2, ncores))
   K = 3
@@ -79,7 +79,7 @@ scDHA <- function(data = data, k = NULL, method = "scDHA", sparse = FALSE, n = 5
   data <- data$data
   data@x[is.na(data@x)] <- 0
   gc()
-  res <- scDHA.basic(data = data, k = k, method = method, K = K, n = n, ncores = ncores, gen_fil = gen_fil, do.clus = do.clus, sample.prob = sample.prob, seed = seed)
+  res <- scDHA.basic(data = data, ndim = ndim, k = k, method = method, K = K, n = n, ncores = ncores, gen_fil = gen_fil, do.clus = do.clus, sample.prob = sample.prob, seed = seed)
   res$keep.genes <- keep.genes[res$keep.genes]
   res
 }
@@ -289,7 +289,7 @@ latent.generating <- function(da, or.da, batch_size, K, ens, epsilon_std, lr, be
   latent
 }
 
-scDHA.basic <- function(data = data, k = NULL, method = "scDHA", K = 3, n = 5e3, ncores = 10L, gen_fil = TRUE, do.clus = TRUE, sample.prob = NULL, seed = NULL) {
+scDHA.basic <- function(data = data, ndim = 10, k = NULL, method = "scDHA", K = 3, n = 5e3, ncores = 10L, gen_fil = TRUE, do.clus = TRUE, sample.prob = NULL, seed = NULL) {
   set.seed(seed)
   ncores.ind <- as.integer(max(1,floor(ncores/K)))
   original_dim <- ncol(data)
@@ -311,6 +311,10 @@ scDHA.basic <- function(data = data, k = NULL, method = "scDHA", K = 3, n = 5e3,
     beta <- 100
     intermediate_dim = 64
     latent_dim = 15
+  }
+
+  if(!is.null(ndim)){
+    latent_dim = ndim
   }
   
   #Feature selection
